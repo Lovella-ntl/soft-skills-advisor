@@ -19,6 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
     streak: 0,
     questionStartedAt: null,
     locked: false,
+    // Holds the currently-picked-but-not-yet-committed answer for this
+    // question. Nothing is scored until the student clicks "Next" — this
+    // lets them change their mind before committing, unlike the old
+    // auto-advance-on-click behaviour.
+    pendingAnswer: null,
   };
 
   // Pre-compute the maximum possible points per category (best option = 4
@@ -33,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cardBody: document.getElementById("quizCardBody"),
     questionCounter: document.getElementById("questionCounter"),
     lockBanner: document.getElementById("lockBanner"),
+    nextBtn: document.getElementById("nextBtn"),
   };
 
   /* ---- Countdown timer ----------------------------------------------------
@@ -134,7 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state.locked) return;
     const q = SSA_QUESTIONS[state.currentIndex];
     state.questionStartedAt = Date.now();
+    state.pendingAnswer = null;
     els.questionCounter.textContent = `Question ${state.currentIndex + 1} of ${SSA_QUESTIONS.length}`;
+
+    // Reset the Next button for the new question: disabled until a choice
+    // is made, and labelled "Finish" on the last question.
+    els.nextBtn.disabled = true;
+    els.nextBtn.textContent =
+      state.currentIndex === SSA_QUESTIONS.length - 1 ? "Finish quiz →" : "Next question →";
 
     let html = `
       <span class="badge rounded-pill mb-3" style="background:${SSA_SKILLS[q.category].color}; color:#1B2A41;">
@@ -294,30 +307,35 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state.locked) return;
     els.cardBody.querySelectorAll(".quiz-option").forEach((b) => b.classList.remove("is-selected"));
     btn.classList.add("is-selected");
-    scoreAnswer(q, Number(btn.dataset.points));
-    revealNext();
+    // Record the pick but don't score it yet — the student can still
+    // change their answer until they press "Next".
+    state.pendingAnswer = { points: Number(btn.dataset.points) };
+    els.nextBtn.disabled = false;
   }
 
   function selectHotspot(region, q) {
     if (state.locked) return;
     els.cardBody.querySelectorAll(".hotspot-region").forEach((r) => r.classList.remove("is-picked"));
     region.classList.add("is-picked");
-    scoreAnswer(q, Number(region.dataset.points));
-    revealNext();
+    state.pendingAnswer = { points: Number(region.dataset.points) };
+    els.nextBtn.disabled = false;
   }
 
-  function revealNext() {
-    // Small delay so the student sees their selection highlighted before
-    // the view advances — purely a UX beat, not blocking logic.
-    setTimeout(() => {
-      if (state.currentIndex < SSA_QUESTIONS.length - 1) {
-        state.currentIndex += 1;
-        renderQuestion();
-      } else {
-        finishQuiz(false);
-      }
-    }, 350);
-  }
+  // Fires when the student clicks "Next question →" / "Finish quiz →".
+  // This is the single point where an answer is actually committed and
+  // scored, and where the quiz advances or ends.
+  els.nextBtn.addEventListener("click", () => {
+    if (state.locked || !state.pendingAnswer) return;
+    const q = SSA_QUESTIONS[state.currentIndex];
+    scoreAnswer(q, state.pendingAnswer.points);
+
+    if (state.currentIndex < SSA_QUESTIONS.length - 1) {
+      state.currentIndex += 1;
+      renderQuestion();
+    } else {
+      finishQuiz(false);
+    }
+  });
 
   /* ---- Finish & handoff to results page -------------------------------------- */
   function finishQuiz(timedOut) {
