@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Results — Soft Skills Advisor</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-md navbar-ssa" aria-label="Main navigation">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <svg class="compass-mark" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="18" fill="none" stroke="#F2A541" stroke-width="2"/>
+          <polygon points="20,8 24,20 20,32 16,20" fill="#F2A541"/>
+        </svg>
+        Soft Skills Advisor
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="quiz.html">Quiz</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="results.html">Results</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container my-5">
+
+    <!-- Shown only if someone lands here without having taken the quiz -->
+    <div class="d-none text-center py-5" id="noResultsState">
+      <h1 class="h3 mb-3">No results yet</h1>
+      <p class="text-muted mb-4">Take the quiz first to see your personalised soft skills profile.</p>
+      <a href="quiz.html" class="btn btn-ssa-primary">Take the quiz →</a>
+    </div>
+
+    <div id="resultsWrap">
+      <p class="section-eyebrow mb-1">Your profile</p>
+      <h1 class="h2 mb-1">Results for <span id="studentNameOut">Student</span></h1>
+      <p class="text-muted mb-1">
+        Overall score: <strong id="overallScoreOut">—</strong> ·
+        Time used: <strong id="timeUsedOut">—</strong>
+      </p>
+      <div class="alert alert-secondary d-none mb-4" id="timeoutNotice">
+        ⏱ Your quiz was auto-submitted when the timer reached zero — this profile reflects the questions you answered in time.
+      </div>
+
+      <div class="row g-4 mt-1">
+        <!-- Canvas radar chart -->
+        <div class="col-lg-6">
+          <div class="canvas-frame text-center mb-3">
+            <h2 class="h6 mb-3">Skill profile (radar chart)</h2>
+            <canvas id="radarCanvas" width="420" height="420" aria-label="Radar chart of your four skill scores" role="img"></canvas>
+          </div>
+          <div class="canvas-frame text-center">
+            <canvas id="confettiCanvas" width="420" height="140" aria-hidden="true"></canvas>
+          </div>
+        </div>
+
+        <!-- Per-skill breakdown -->
+        <div class="col-lg-6">
+          <h2 class="h6 mb-3">Breakdown & next steps</h2>
+          <div id="skillBreakdown"><!-- Populated dynamically --></div>
+        </div>
+      </div>
+
+      <div class="text-center mt-4">
+        <a href="quiz.html" class="btn btn-ssa-outline me-2">Retake the quiz</a>
+        <a href="contact.html" class="btn btn-ssa-primary">Send us feedback →</a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>© 2026 Soft Skills Advisor. Student project.</span>
+      <a href="contact.html">Contact & Feedback</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/quiz-data.js"></script>
+  <script src="js/results.js"></script>
+</body>
+</html>
