@@ -17,6 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         email: data.email,
       })
     );
-    window.location.href = "assessment.html";
+    window.location.href = "quiz.html";
   });
 });

@@ -1,170 +1,94 @@
 /* ==========================================================================
    validation.js
-   Shared, reusable form-validation engine used by the Landing page form
-   and the Contact & Feedback form. No alert()/confirm() popups anywhere —
-   every error is rendered inline as a <small class="error-message"> that
-   sits directly below its input, and every field toggles Bootstrap's
-   .is-valid / .is-invalid classes in real time (on 'input' AND 'blur').
+   Reusable, dependency-free inline form validation engine.
+   - Regex patterns for name / student ID / institutional email / phone
+   - Attaches to `input` + `blur` events for real-time feedback
+   - Toggles .is-valid / .is-invalid and shows/hides .error-message
+   No alert()/confirm() is ever used — all feedback renders inline.
    ========================================================================== */
 
-/* --- Regex pattern library --------------------------------------------------
-   Centralised so both forms (and future ones) stay consistent. */
-const SSA_PATTERNS = {
-  // Full name: letters (incl. accented), spaces, hyphens and apostrophes
-  // only — no digits or symbols. 2–60 chars.
-  fullName: /^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[ '-][A-Za-zÀ-ÖØ-öø-ÿ]+)*$/,
+const PATTERNS = {
+  // Letters, spaces, hyphens and apostrophes only (no digits/specials)  2 to 60 chars
+  name: /^[A-Za-z][A-Za-z'-]*(?:\s[A-Za-z][A-Za-z'-]*)+$/,
 
-  // Institutional email: accepts the school's student-ID format
-  // (e.g. student.id@bse.ac.mu) OR a standard email address, so the form
-  // is usable in a demo without a real @bse.ac.mu account.
-  institutionalEmail:
-    /^(?:[A-Za-z]+\.[A-Za-z0-9]+@bse\.ac\.mu|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})$/,
+  // Institutional format: student.id@bse.ac.mu  OR a general fallback email
+  institutionalEmail: /^[a-zA-Z]+\.[a-zA-Z0-9]+@bse\.ac\.mu$/,
+  genericEmail: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
 
-  // Student ID: 2-4 uppercase letters, then 4-8 digits, e.g. BSE20231045
-  studentId: /^[A-Z]{2,4}[0-9]{4,8}$/,
+  // Student ID e.g. BSE2024-0451 or 8 digit numeric ID
+  studentId: /^(?:[A-Z]{2,4}\d{4}-\d{3,5}|\d{6,10})$/,
 
-  // Phone number: optional leading +, then 7-15 digits, spaces/dashes
-  // allowed between groups (covers local and international formats).
-  phone: /^\+?[0-9]{1,4}?[-.\s]?(?:\(?[0-9]{2,4}\)?[-.\s]?){2,4}[0-9]{2,4}$/,
+  // Phone: optional +230 country code, 7-8 digits, spaces allowed
+  phone: /^(?:\+\d{1,3}[ -]?)?\d{3,4}[ -]?\d{4}$/,
 
-  // Generic short message field: require at least 10 non-space characters
-  minMessage: /^(?=(?:\s*\S){10,}).+$/s,
+  // Generic short message: at least 10 non-whitespace characters
+  minMessage: /^(?=(?:\S\s*){10,}).+$/s,
 };
 
 /**
- * Validate a single field against a named rule.
- * Returns { valid: boolean, message: string } — message is only used
- * when valid === false.
+ * Validate a single field against a named pattern and update its UI state.
+ * @param {HTMLInputElement|HTMLTextAreaElement} input
+ * @param {RegExp|Function} rule - regex to test, or a predicate function
+ * @param {string} message - error text shown when invalid
  */
-function ssaValidateField(rule, rawValue) {
-  const value = (rawValue || "").trim();
+function validateField(input, rule, message) {
+  const wrapper = input.closest('.field');
+  const errorEl = wrapper ? wrapper.querySelector('.error-message') : null;
+  const value = input.value.trim();
 
-  switch (rule) {
-    case "required":
-      return value.length > 0
-        ? { valid: true }
-        : { valid: false, message: "This field can't be empty." };
+  const isEmpty = value.length === 0;
+  const passes = isEmpty ? false : (typeof rule === 'function' ? rule(value) : rule.test(value));
 
-    case "fullName":
-      if (value.length === 0) return { valid: false, message: "Enter your full name." };
-      if (!SSA_PATTERNS.fullName.test(value))
-        return { valid: false, message: "Letters, spaces and hyphens only — no numbers or symbols." };
-      if (value.trim().split(/\s+/).length < 2)
-        return { valid: false, message: "Enter first and last name." };
-      return { valid: true };
-
-    case "institutionalEmail":
-      if (value.length === 0) return { valid: false, message: "Enter your email address." };
-      if (!SSA_PATTERNS.institutionalEmail.test(value))
-        return { valid: false, message: "Use a valid email, e.g. student.id@bse.ac.mu" };
-      return { valid: true };
-
-    case "studentId":
-      if (value.length === 0) return { valid: false, message: "Enter your student ID." };
-      if (!SSA_PATTERNS.studentId.test(value.toUpperCase()))
-        return { valid: false, message: "Format: 2–4 letters then 4–8 digits, e.g. BSE20231045" };
-      return { valid: true };
-
-    case "phone":
-      if (value.length === 0) return { valid: false, message: "Enter a phone number." };
-      if (!SSA_PATTERNS.phone.test(value))
-        return { valid: false, message: "Enter a valid phone number, e.g. +230 5712 3456" };
-      return { valid: true };
-
-    case "minMessage":
-      if (value.length === 0) return { valid: false, message: "This field can't be empty." };
-      if (!SSA_PATTERNS.minMessage.test(value))
-        return { valid: false, message: "Please write at least 10 characters." };
-      return { valid: true };
-
-    case "select":
-      return value.length > 0
-        ? { valid: true }
-        : { valid: false, message: "Please choose an option." };
-
-    default:
-      return { valid: true };
+  if (passes) {
+    input.classList.add('is-valid');
+    input.classList.remove('is-invalid');
+    input.setAttribute('aria-invalid', 'false');
+    if (errorEl) errorEl.classList.remove('show');
+    return true;
   }
+
+  input.classList.remove('is-valid');
+  // Only flag red once the user has interacted (avoids shouting on first paint)
+  if (input.dataset.touched === 'true') {
+    input.classList.add('is-invalid');
+    input.setAttribute('aria-invalid', 'true');
+    if (errorEl) {
+      errorEl.textContent = isEmpty ? 'This field is required.' : message;
+      errorEl.classList.add('show');
+    }
+  }
+  return false;
 }
 
 /**
- * Wire up one <input>/<textarea>/<select> for real-time validation.
- * Expects the field to have:
- *   data-rule="fullName|institutionalEmail|studentId|phone|minMessage|select|required"
- * and a sibling element matching `${field.id}-error` to receive the message.
+ * Wire up a field with live validation on input + blur.
+ * @param {string} selector - CSS selector for the input
+ * @param {RegExp|Function} rule
+ * @param {string} message
+ * @param {Function} [onChange] - optional callback(isValid)
  */
-function ssaBindField(field) {
-  const rule = field.dataset.rule;
-  if (!rule) return;
+function bindValidation(selector, rule, message, onChange) {
+  const input = document.querySelector(selector);
+  if (!input) return;
 
-  const errorEl = document.getElementById(`${field.id}-error`);
-
-  const runValidation = () => {
-    const result = ssaValidateField(rule, field.value);
-
-    // Toggle Bootstrap-style state classes so borders/icons update live.
-    field.classList.remove("is-valid", "is-invalid");
-    if (field.value.trim().length === 0 && !field.dataset.touched) {
-      // Don't shame an untouched, empty field before the user has
-      // interacted with it — only mark it once they've engaged with it.
-    } else if (result.valid) {
-      field.classList.add("is-valid");
-    } else {
-      field.classList.add("is-invalid");
-    }
-
-    if (errorEl) {
-      errorEl.textContent = field.dataset.touched && !result.valid ? result.message : "";
-    }
-
-    field.setAttribute("aria-invalid", String(!result.valid));
-    return result.valid;
+  const run = () => {
+    const ok = validateField(input, rule, message);
+    if (typeof onChange === 'function') onChange(ok);
+    return ok;
   };
 
-  // Validate as the user types (debounced lightly via input event is fine
-  // for this scale of form) and again when focus leaves the field.
-  field.addEventListener("input", () => {
-    field.dataset.touched = "true";
-    runValidation();
-  });
-  field.addEventListener("blur", () => {
-    field.dataset.touched = "true";
-    runValidation();
-  });
+  input.addEventListener('blur', () => { input.dataset.touched = 'true'; run(); });
+  input.addEventListener('input', () => { if (input.dataset.touched === 'true') run(); });
 
-  // Expose the check so the form's submit handler can force full validation.
-  field.__ssaRunValidation = runValidation;
+  return run;
 }
 
 /**
- * Bind an entire form: every [data-rule] field inside it, plus a submit
- * handler that re-validates everything and blocks submission on failure.
- * onValid is called with a plain object of { fieldName: value } once every
- * field passes.
+ * Institutional-or-generic email check used by validateForm helpers.
  */
-function ssaBindForm(formEl, onValid) {
-  const fields = Array.from(formEl.querySelectorAll("[data-rule]"));
-  fields.forEach(ssaBindField);
-
-  formEl.addEventListener("submit", (event) => {
-    event.preventDefault(); // never rely on native/browser popups
-
-    let allValid = true;
-    fields.forEach((field) => {
-      field.dataset.touched = "true";
-      const valid = field.__ssaRunValidation();
-      if (!valid) allValid = false;
-    });
-
-    if (!allValid) {
-      // Focus the first invalid field for accessibility/usability.
-      const firstInvalid = fields.find((f) => f.classList.contains("is-invalid"));
-      if (firstInvalid) firstInvalid.focus();
-      return;
-    }
-
-    const data = {};
-    fields.forEach((f) => (data[f.name || f.id] = f.value.trim()));
-    onValid(data);
-  });
+function isValidEmail(value) {
+  return PATTERNS.institutionalEmail.test(value) || PATTERNS.genericEmail.test(value);
 }
+
+// Export to window so plain <script> includes on every page can use it
+window.SSA_VALIDATION = { PATTERNS, validateField, bindValidation, isValidEmail };

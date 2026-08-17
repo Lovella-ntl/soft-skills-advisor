@@ -1,137 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact & Feedback — Soft Skills Advisor</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soft Skills Advisor. Contact & Feedback</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/style.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="ember-field" aria-hidden="true"></div>
 
-  <nav class="navbar navbar-expand-md navbar-ssa" aria-label="Main navigation">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">
-        <svg class="compass-mark" viewBox="0 0 40 40" aria-hidden="true">
-          <circle cx="20" cy="20" r="18" fill="none" stroke="#B3444B" stroke-width="2"/>
-          <polygon points="20,8 24,20 20,32 16,20" fill="#B3444B"/>
-        </svg>
-        Soft Skills Advisor
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navMenu">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="values.html">The Four Values</a></li>
-          <li class="nav-item"><a class="nav-link" href="assessment.html">Assessment</a></li>
-          <li class="nav-item"><a class="nav-link" href="results.html">Results</a></li>
-          <li class="nav-item"><a class="nav-link active" aria-current="page" href="contact.html">Contact</a></li>
+<header class="site-header">
+  <a class="brand" href="index.html"><span class="mark"></span> Soft Skills Advisor</a>
+  <nav class="main-nav">
+    <a href="index.html">Home</a>
+    <a href="quiz.html">Quiz</a>
+    <a href="contact.html" class="active">Contact</a>
+  </nav>
+</header>
+
+<main class="container-fluid" style="max-width:900px;">
+  <h1>Contact & feedback</h1>
+
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="card">
+        <h2>About this project</h2>
+        <p class="text-dim">Built as coursework for the BSE Web Technologies module. Replace this block with your own author details before submission.</p>
+        <ul class="text-dim">
+          <li><strong>Author:</strong> NKUSI Teta Lovella</li>
+          <li><strong>GitHub repo:</strong> <a href="https://github.com/Lovella-ntl/soft-skills-advisor" target="_blank" rel="noopener">github.com/Lovella-tl/soft-skills-advisor</a></li>
+          <li><strong>Live site:</strong> <a href="https://Lovella-ntl.github.io/soft-skills-advisor/" target="_blank" rel="noopener">Lovella-ntl.github.io/soft-skills-advisor</a></li>
         </ul>
       </div>
     </div>
-  </nav>
 
-  <main class="container my-5">
-    <div class="row g-5">
-      <!-- Author + project info -->
-      <div class="col-lg-5">
-        <p class="section-eyebrow mb-2">About this project</p>
-        <h1 class="h2 mb-3">Contact & Feedback</h1>
-        <p class="text-muted mb-4">
-          Soft Skills Advisor is project evaluating student profiles across
-          Communication, Critical Thinking, Time Management and Leadership.
-        </p>
-
-        <div class="card-ssa p-4 mb-4">
-          <h2 class="h6 mb-3">Author</h2>
-          <!-- Replace with your real details before submission -->
-          <p class="mb-1"><strong>Name:</strong>NKUSI Teta Lovella</p>
-          <p class="mb-0"><strong>Email:</strong>nkusiteta4@gmail.com</p>
-        </div>
-
-        <div class="card-ssa p-4">
-          <h2 class="h6 mb-3">Project links</h2>
-          <p class="mb-1">
-            <strong>Repository:</strong>
-            <a href="https://github.com/Lovella-ntl/soft-skills-advisor" target="_blank" rel="noopener">github.com/Lovella-tl/soft-skills-advisor</a>
-          </p>
-          <p class="mb-0">
-            <strong>Live site:</strong>
-            <a href="https://Lovella-ntl.github.io/soft-skills-advisor/" target="_blank" rel="noopener">Lovella-ntl.github.io/soft-skills-advisor</a>
-          </p>
-        </div>
-      </div>
-
-      <!-- Contact form -->
-      <div class="col-lg-7">
-        <div class="card-ssa p-4 p-md-5">
-          <h2 class="h4 mb-4">Send feedback</h2>
-
-          <div class="alert alert-success d-none" id="contactSuccess" role="status"></div>
-
-          <form id="contactForm" novalidate>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="contactName" class="form-label">Full name</label>
-                <input type="text" class="form-control" id="contactName" name="contactName"
-                       data-rule="fullName" placeholder="e.g. Jordan Lee" autocomplete="name">
-                <small id="contactName-error" class="error-message" role="alert"></small>
-              </div>
-
-              <div class="col-md-6">
-                <label for="contactEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="contactEmail" name="contactEmail"
-                       data-rule="institutionalEmail" placeholder="you@example.com" autocomplete="email">
-                <small id="contactEmail-error" class="error-message" role="alert"></small>
-              </div>
-
-              <div class="col-md-6">
-                <label for="contactPhone" class="form-label">Phone (optional)</label>
-                <input type="tel" class="form-control" id="contactPhone" name="contactPhone"
-                       data-rule="phone" placeholder="+230 5712 3456" autocomplete="tel">
-                <small id="contactPhone-error" class="error-message" role="alert"></small>
-              </div>
-
-              <div class="col-md-6">
-                <label for="contactTopic" class="form-label">Topic</label>
-                <select class="form-select" id="contactTopic" name="contactTopic" data-rule="select">
-                  <option value="">Choose one…</option>
-                  <option value="bug">Report an issue</option>
-                  <option value="feedback">General feedback</option>
-                  <option value="feature">Feature suggestion</option>
-                </select>
-                <small id="contactTopic-error" class="error-message" role="alert"></small>
-              </div>
-
-              <div class="col-12">
-                <label for="contactMessage" class="form-label">Message</label>
-                <textarea class="form-control" id="contactMessage" name="contactMessage" rows="5"
-                          data-rule="minMessage" placeholder="Tell us what worked, and what didn't…"></textarea>
-                <small id="contactMessage-error" class="error-message" role="alert"></small>
-              </div>
-            </div>
-
-            <button type="submit" class="btn btn-ssa-primary mt-4">Send message</button>
-          </form>
+    <div class="col-md-7">
+      <div class="card">
+        <h2>Send feedback</h2>
+        <form id="contactForm" class="form-grid" novalidate>
+          <div class="field">
+            <label for="contactName">Name</label>
+            <input type="text" id="contactName" class="form-control" placeholder="Jane Doe" required>
+            <small class="error-message" role="alert"></small>
+          </div>
+          <div class="field">
+            <label for="contactEmail">Email</label>
+            <input type="email" id="contactEmail" class="form-control" placeholder="you@example.com" required>
+            <small class="error-message" role="alert"></small>
+          </div>
+          <div class="field">
+            <label for="contactPhone">Phone (optional format check)</label>
+            <input type="tel" id="contactPhone" class="form-control" placeholder="+230 5123 4567" required>
+            <small class="error-message" role="alert"></small>
+          </div>
+          <div class="field">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" class="form-control" rows="4" placeholder="Tell us what you think…" required></textarea>
+            <small class="error-message" role="alert"></small>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Send message</button>
+        </form>
+        <div id="contactSuccess" class="recommend-box mt-2" hidden>
+          Thanks. your message looks good and would be sent from here in a live deployment.
         </div>
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
-  <footer class="site-footer">
-    <div class="container d-flex flex-wrap justify-content-between gap-2">
-      <span>© 2026 Soft Skills Advisor.</span>
-      <a href="contact.html">Contact & Feedback</a>
-    </div>
-  </footer>
+<footer class="site-footer">
+  © 2026 Soft Skills Advisor
+</footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="js/validation.js"></script>
-  <script src="js/contact.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

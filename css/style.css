@@ -1,663 +1,385 @@
 /* ==========================================================================
-   SOFT SKILLS ADVISOR — GLOBAL STYLESHEET
-   Layered on top of Bootstrap 5.3 (loaded via CDN in each HTML file).
-   Design concept: a deep, confident dark-red identity (professional,
-   assessment-report tone) with a four-point "compass" motif tying the
-   four values together, and soft ambient motion (drifting gradient blobs
-   + a looping abstract background video) so the site feels alive without
-   being distracting.
+   Soft Skills Advisor — Stylesheet
+   Design tokens:
+   --color-bg-1 / bg-2 / bg-3 : the three stops the background gradient
+     animates between (dark red family), 5s per shift, looping.
+   --color-accent  : hot ember red used for CTAs / focus / progress
+   --color-ink     : warm off-white text on dark surfaces
+   Type: "Fraunces" (display/serif, headings) + "Inter" (body/UI)
+         + "JetBrains Mono" (timer, scores, data)
    ========================================================================== */
 
-/* --- Design tokens -------------------------------------------------------
-   Palette:
-     --ink        #1C0D0F  near-black warm red-black (headings, nav, dark surfaces)
-     --paper      #F7F3F1  warm off-white    (page background)
-     --red        #8B1E24  dark red          (PRIMARY brand / CTA color)
-     --red-dark   #6E161C  darker red        (hover states)
-     --red-light  #B3444B  lighter red       (accents, highlights)
-     --teal       #2EC4B6  soft teal         (Communication)
-     --violet     #6C63A6  dusty violet      (Critical Thinking)
-     --coral      #E85D4E  muted coral       (Time Management)
-     --amber      #F2A541  warm amber        (Leadership)
-   Type:
-     Display: "Sora"  (confident, geometric — headings, the compass mark)
-     Body:    "Inter"  (neutral, highly legible — paragraphs, forms, UI)
---------------------------------------------------------------------------- */
 :root {
-  --ink: #1c0d0f;
-  --ink-soft: #3a1a1e;
-  --paper: #f7f3f1;
-  --paper-dim: #efe6e3;
-  --red: #8b1e24;
-  --red-dark: #6e161c;
-  --red-light: #b3444b;
-  --amber: #f2a541;
-  --teal: #2ec4b6;
-  --coral: #e85d4e;
-  --violet: #6c63a6;
+  --color-bg-1: #2a0a0a;
+  --color-bg-2: #4a0f0f;
+  --color-bg-3: #6b1414;
+  --color-surface: #1c0808f2;
+  --color-surface-solid: #240b0b;
+  --color-card: #33101088;
+  --color-accent: #e2452f;      /* ember red — primary action color */
+  --color-accent-hover: #ff5a3d;
+  --color-ink: #f7ece6;
+  --color-ink-dim: #d9b8b0;
+  --color-border: #6b241f;
+  --color-success: #4caf7d;
+  --color-danger: #ff6b5b;
+  --color-warning: #ffb545;
 
-  --skill-communication: var(--teal);
-  --skill-critical: var(--violet);
-  --skill-time: var(--coral);
-  --skill-leadership: var(--amber);
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
 
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --shadow-soft: 0 12px 30px -12px rgba(28, 13, 15, 0.28);
-  --shadow-red: 0 12px 26px -10px rgba(139, 30, 36, 0.45);
+  --radius: 14px;
+  --transition-bg: 5s;          /* required: background transition duration */
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background-color: var(--paper);
-  color: var(--ink);
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1 0 auto;
-}
-
-h1, h2, h3, h4, .display-font {
-  font-family: "Sora", "Inter", sans-serif;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-
-a {
-  color: var(--red);
-}
-
-/* Respect users who prefer reduced motion — turns off decorative motion
-   (blobs, video, transitions) while keeping functional state changes
-   (validation, timers) intact. */
+/* Reduced motion respect */
 @media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-  .bg-video, .blob { display: none !important; }
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
-/* --- Navbar ---------------------------------------------------------------
-   The compass mark: a small rotating SVG needle used as the brand icon on
-   every page, echoing the four-value structure at a glance. */
-.navbar-ssa {
-  background-color: var(--ink);
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font-body);
+  color: var(--color-ink);
 }
 
-.navbar-ssa .navbar-brand {
-  font-family: "Sora", sans-serif;
-  font-weight: 700;
-  color: var(--paper) !important;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
+/* ---- Animated moving background (5s loop, per user requirement) -------- */
+body {
+  background: linear-gradient(120deg, var(--color-bg-1), var(--color-bg-2), var(--color-bg-3), var(--color-bg-2));
+  background-size: 400% 400%;
+  animation: driftBackground var(--transition-bg) ease-in-out infinite;
 }
 
-.compass-mark {
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
+@keyframes driftBackground {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.navbar-ssa .nav-link {
-  color: rgba(247, 243, 241, 0.75) !important;
-  font-weight: 500;
-  position: relative;
-  transition: color 0.2s ease;
-}
-
-.navbar-ssa .nav-link.active,
-.navbar-ssa .nav-link:hover {
-  color: var(--red-light) !important;
-}
-
-/* Animated underline that grows in on hover/active. */
-.navbar-ssa .nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0%;
-  height: 2px;
-  background: var(--red-light);
-  transition: width 0.2s ease;
-}
-
-.navbar-ssa .nav-link:hover::after,
-.navbar-ssa .nav-link.active::after {
-  width: 100%;
-}
-
-.navbar-brand .compass-mark {
-  transition: transform 0.4s ease;
-}
-
-.navbar-brand:hover .compass-mark {
-  transform: rotate(50deg);
-}
-
-/* --- Ambient background motion --------------------------------------------
-   Two soft, blurred, slowly-drifting color blobs used behind hero sections.
-   Fully original CSS/SVG — no external images, so nothing to license. */
-.blob-field {
-  position: absolute;
+/* faint drifting ember particles layered above the gradient */
+.ember-field {
+  position: fixed;
   inset: 0;
-  overflow: hidden;
-  z-index: 0;
   pointer-events: none;
-}
-
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.55;
-  will-change: transform;
-}
-
-.blob-a {
-  width: 420px;
-  height: 420px;
-  background: radial-gradient(circle, var(--red) 0%, transparent 70%);
-  top: -120px;
-  left: -80px;
-  animation: driftA 22s ease-in-out infinite alternate;
-}
-
-.blob-b {
-  width: 360px;
-  height: 360px;
-  background: radial-gradient(circle, var(--teal) 0%, transparent 70%);
-  bottom: -140px;
-  right: -60px;
-  animation: driftB 26s ease-in-out infinite alternate;
-}
-
-.blob-c {
-  width: 280px;
-  height: 280px;
-  background: radial-gradient(circle, var(--amber) 0%, transparent 70%);
-  top: 30%;
-  right: 20%;
-  animation: driftC 30s ease-in-out infinite alternate;
-}
-
-@keyframes driftA {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(60px, 40px) scale(1.15); }
-}
-@keyframes driftB {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-50px, -30px) scale(1.1); }
-}
-@keyframes driftC {
-  0%   { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-40px, 50px) scale(0.9); }
-}
-
-/* --- Hero (Landing page) -------------------------------------------------- */
-.hero-ssa {
-  position: relative;
-  color: var(--paper);
-  padding: 5rem 0 5.5rem;
-  overflow: hidden;
-  background-color: var(--ink);
-}
-
-/* Looping abstract background video — muted, autoplaying, covers the hero.
-   A dark overlay sits on top so text stays readable at any point in the loop. */
-.bg-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   z-index: 0;
-  opacity: 0.55;
+  overflow: hidden;
 }
-
-.hero-overlay {
+.ember {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, rgba(28, 13, 15, 0.65) 0%, rgba(28, 13, 15, 0.88) 100%);
+  bottom: -10%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  opacity: 0.35;
+  filter: blur(1px);
+  animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.45; }
+  100% { transform: translateY(-110vh) translateX(20px); opacity: 0; }
 }
 
-.hero-ssa .container {
+a { color: var(--color-accent); }
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5em;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--color-accent-hover);
+}
+
+/* ---- Layout shell -------------------------------------------------- */
+.site-header {
   position: relative;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  backdrop-filter: blur(6px);
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.brand .mark {
+  width: 12px; height: 12px; border-radius: 3px;
+  background: var(--color-accent);
+  transform: rotate(45deg);
+  box-shadow: 0 0 12px var(--color-accent);
+}
+nav.main-nav { display: flex; gap: 1.75rem; }
+nav.main-nav a {
+  color: var(--color-ink-dim);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 4px;
+  transition: color 0.25s ease;
+}
+nav.main-nav a::after {
+  content: "";
+  position: absolute; left: 0; bottom: 0;
+  width: 0; height: 2px;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+nav.main-nav a:hover, nav.main-nav a.active { color: var(--color-ink); }
+nav.main-nav a:hover::after, nav.main-nav a.active::after { width: 100%; }
+
+main { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+.site-footer {
+  position: relative; z-index: 1;
+  text-align: center; padding: 2rem;
+  color: var(--color-ink-dim);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--color-border);
 }
 
-.hero-ssa h1,
-.hero-ssa h2:not(.card-ssa h2) {
-  color: var(--paper);
-}
-
-.hero-ssa .lede {
-  color: #E8B0B3; /* same as the eyebrow ("Four values. One profile...") for visibility on the dark hero */
-  max-width: 42rem;
-}
-
-/* Text inside a white card must stay dark even when the card sits inside
-   a dark section like .hero-ssa (which sets light text by default). */
-.card-ssa {
-  color: var(--ink);
-}
-
-.card-ssa p,
-.card-ssa li,
-.card-ssa span:not([style]) {
-  color: var(--ink);
-}
-
-/* Four value chips echoed in the hero, each tinted with its value color */
-.skill-chip {
+/* ---- Buttons --------------------------------------------------------- */
+.btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  font-size: 0.85rem;
+  font-family: var(--font-body);
   font-weight: 600;
-  background: rgba(247, 243, 241, 0.08);
-  border: 1px solid rgba(247, 243, 241, 0.18);
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-}
-
-.skill-chip:hover {
-  background: rgba(247, 243, 241, 0.16);
-  border-color: rgba(247, 243, 241, 0.4);
-  transform: translateY(-2px);
-}
-
-.skill-chip .dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.dot-communication { background: var(--skill-communication); }
-.dot-critical { background: var(--skill-critical); }
-.dot-time { background: var(--skill-time); }
-.dot-leadership { background: var(--skill-leadership); }
-
-/* --- Cards / sections ------------------------------------------------------ */
-.card-ssa {
-  background: #fff;
-  border: none;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card-ssa:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 34px -14px rgba(28, 13, 15, 0.35);
-}
-
-.section-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--red);
-}
-
-/* --- Buttons ---------------------------------------------------------------
-   Dark red is the single primary accent for calls-to-action. */
-.btn-ssa-primary {
-  background-color: var(--red);
-  border-color: var(--red);
-  color: #fff;
-  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.6rem;
   border-radius: 999px;
-  padding: 0.65rem 1.6rem;
-  transition: background-color 0.2s ease, border-color 0.2s ease,
-    transform 0.15s ease, box-shadow 0.2s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
-
-.btn-ssa-primary:hover,
-.btn-ssa-primary:focus {
-  background-color: var(--red-dark);
-  border-color: var(--red-dark);
-  color: #fff;
+.btn-primary {
+  background: var(--color-accent);
+  color: #1a0505;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-red);
+  box-shadow: 0 10px 24px -8px rgba(226, 69, 47, 0.65);
 }
-
-.btn-ssa-primary:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-.btn-ssa-primary:disabled,
-.btn-ssa-primary.is-disabled {
-  background-color: #d8cfcd;
-  border-color: #d8cfcd;
-  color: #8a8a8a;
-  transform: none;
-  box-shadow: none;
-  cursor: not-allowed;
-}
-
-.btn-ssa-outline {
-  border-radius: 999px;
-  border: 1.5px solid var(--ink);
-  color: var(--ink);
-  font-weight: 600;
-  padding: 0.6rem 1.5rem;
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-ghost {
   background: transparent;
-  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+  color: var(--color-ink);
+  border-color: var(--color-border);
+}
+.btn-ghost:hover { border-color: var(--color-accent); color: var(--color-accent-hover); transform: translateY(-2px); }
+
+/* ---- Cards / surfaces -------------------------------------------------- */
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  backdrop-filter: blur(8px);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-accent);
+  box-shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
 }
 
-.btn-ssa-outline:hover {
-  background: var(--ink);
-  color: var(--paper);
-  transform: translateY(-2px);
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 2.5rem;
+  align-items: center;
+  padding: 2rem 0 4rem;
 }
-
-.btn-ssa-outline:active {
-  transform: translateY(0);
-}
-
-/* --- Forms & validation -----------------------------------------------------
-   Inline-error styling. Our own .error-message <small> elements, toggled by
-   JS on 'input'/'blur' — never a native alert()/confirm(). */
-.form-label {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.form-control:focus,
-.form-select:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 0 0.2rem rgba(139, 30, 36, 0.2);
-}
-
-.form-control.is-valid {
-  border-color: var(--teal);
-  background-image: none;
-}
-
-.form-control.is-invalid {
-  border-color: var(--coral);
-  background-image: none;
-}
-
-.error-message {
-  display: block;
-  min-height: 1.1rem;
-  color: var(--coral);
-  font-size: 0.82rem;
-  font-weight: 600;
-  margin-top: 0.25rem;
-}
-
-.success-message {
-  display: block;
-  min-height: 1.1rem;
-  color: #1b8f7a;
-  font-size: 0.82rem;
-  font-weight: 600;
-  margin-top: 0.25rem;
-}
-
-/* --- Assessment page (Likert table) ----------------------------------------- */
-.assessment-shell {
-  max-width: 980px;
-}
-
-.assessment-shell h1,
-.assessment-shell p,
-.assessment-shell label {
-  color: #000;
-}
-
-.timer-display {
-  font-family: "Sora", sans-serif;
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  font-size: 1.6rem;
-  padding: 0.35rem 1rem;
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--paper);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.timer-display.timer-warning {
-  background: var(--coral);
-  color: #fff;
-  animation: pulse-warning 1s infinite;
-}
-
-@keyframes pulse-warning {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-.timer-display.timer-locked {
-  background: #6b7280;
-  color: #fff;
-  animation: none;
-}
-
-/* Progress bar showing how many of the 20 statements are answered */
-.answer-progress {
-  height: 10px;
-  border-radius: 999px;
-  background: var(--paper-dim);
+.hero h1 { font-size: clamp(2.1rem, 4vw, 3.2rem); }
+.hero p.lead { color: var(--color-ink-dim); font-size: 1.05rem; max-width: 46ch; }
+.hero-visual {
+  aspect-ratio: 1/1;
+  border-radius: 20px;
+  border: 1px solid var(--color-border);
+  background: radial-gradient(circle at 30% 30%, var(--color-bg-3), var(--color-bg-1));
+  position: relative;
   overflow: hidden;
 }
-
-.answer-progress > span {
-  display: block;
-  height: 100%;
-  background: var(--red);
-  border-radius: 999px;
-  transition: width 0.25s ease;
-}
-
-.likert-table-wrap {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  overflow-x: auto;
-}
-
-.likert-table {
-  width: 100%;
-  min-width: 720px;
-  border-collapse: collapse;
-}
-
-.likert-table thead th {
-  font-family: "Sora", sans-serif;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #fff;
-  background: var(--ink);
-  padding: 0.9rem 0.6rem;
-  text-align: center;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.likert-table thead th:first-child {
-  text-align: left;
-  min-width: 260px;
-}
-
-.likert-table tbody tr {
-  border-bottom: 1px solid var(--paper-dim);
-  transition: background-color 0.15s ease;
-}
-
-.likert-table tbody tr:hover {
-  background: var(--paper-dim);
-}
-
-.likert-table tbody tr.is-answered {
-  background: rgba(139, 30, 36, 0.04);
-}
-
-.likert-statement-cell {
-  padding: 0.9rem 1rem;
-  font-size: 0.92rem;
-  color: #000;
-}
-
-.likert-category-tag {
-  display: inline-block;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 0.12rem 0.5rem;
-  border-radius: 999px;
-  margin-right: 0.5rem;
-  color: var(--ink);
-}
-
-.likert-radio-cell {
-  text-align: center;
-  padding: 0.6rem;
-}
-
-.likert-radio-cell input[type="radio"] {
-  width: 1.25rem;
-  height: 1.25rem;
-  cursor: pointer;
-  accent-color: var(--red);
-  transition: transform 0.15s ease;
-}
-
-.likert-radio-cell input[type="radio"]:hover {
-  transform: scale(1.15);
-}
-
-.timeout-locked .likert-radio-cell input[type="radio"] {
-  pointer-events: none;
+.hero-visual .ring {
+  position: absolute; border-radius: 50%; border: 1px solid var(--color-accent);
   opacity: 0.5;
 }
+.hero-visual .ring.r1 { inset: 15%; animation: spin 18s linear infinite; }
+.hero-visual .ring.r2 { inset: 30%; animation: spin 12s linear infinite reverse; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* --- Values page ------------------------------------------------------------- */
-.value-card {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 1.75rem;
-  border-top: 5px solid var(--red);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  height: 100%;
+@media (max-width: 820px) {
+  .hero { grid-template-columns: 1fr; }
 }
 
-.value-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 36px -16px rgba(28, 13, 15, 0.35);
+/* ---- Forms ------------------------------------------------------------- */
+.form-grid { display: grid; gap: 1.35rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
+.field label { font-size: 0.85rem; font-weight: 600; color: var(--color-ink-dim); }
+.field input, .field textarea, .field select {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: #180707;
+  color: var(--color-ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
-
-.value-card .value-icon {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(226, 69, 47, 0.25);
 }
-
-/* --- Results page ------------------------------------------------------------ */
-.canvas-frame {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  padding: 1rem;
+.field input.is-valid, .field textarea.is-valid { border-color: var(--color-success); background: #10201a; }
+.field input.is-invalid, .field textarea.is-invalid { border-color: var(--color-danger); background: #250d0d; }
+.error-message {
+  display: none;
+  font-size: 0.8rem;
+  color: var(--color-danger);
+  font-family: var(--font-mono);
 }
+.error-message.show { display: block; }
+.field.valid .success-message { display: block; color: var(--color-success); font-size: 0.8rem; }
+.success-message { display: none; }
 
-#radarCanvas, #confettiCanvas {
-  width: 100%;
-  height: auto;
-  display: block;
+/* ---- Quiz -------------------------------------------------------------- */
+.quiz-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;
 }
-
-.result-skill-row {
-  border-radius: var(--radius-md);
-  padding: 0.9rem 1.1rem;
-  background: #fff;
-  box-shadow: var(--shadow-soft);
-  margin-bottom: 0.75rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+.timer-display {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border);
+  background: #180707;
+  min-width: 108px;
+  text-align: center;
 }
+.timer-display.warning { border-color: var(--color-warning); color: var(--color-warning); animation: pulse 1s ease-in-out infinite; }
+.timer-display.expired { border-color: var(--color-danger); color: var(--color-danger); }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,181,69,0.5); } 50% { box-shadow: 0 0 0 8px rgba(255,181,69,0); } }
 
-.result-skill-row:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 28px -14px rgba(28, 13, 15, 0.32);
-}
-
-.result-skill-row.needs-improvement {
-  border-left: 4px solid var(--red);
-}
-
-.result-skill-bar {
+.progress-track {
+  flex: 1 1 240px;
   height: 10px;
   border-radius: 999px;
-  background: var(--paper-dim);
+  background: #180707;
+  border: 1px solid var(--color-border);
   overflow: hidden;
 }
-
-.result-skill-bar > span {
-  display: block;
+.progress-fill {
   height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-hover));
+  transition: width 0.4s ease;
+}
+.progress-label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--color-ink-dim); white-space: nowrap; }
+
+.quiz-card { min-height: 320px; }
+.quiz-card .category-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.6rem;
   border-radius: 999px;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent-hover);
+  margin-bottom: 1rem;
+}
+.options-list { display: grid; gap: 0.8rem; margin-top: 1.5rem; }
+.option-btn {
+  text-align: left;
+  padding: 0.9rem 1.1rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-border);
+  background: #1c0a0a;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-size: 0.96rem;
+  transition: border-color 0.2s ease, transform 0.15s ease, background 0.2s ease;
+}
+.option-btn:hover { border-color: var(--color-accent-hover); transform: translateX(4px); }
+.option-btn.selected { border-color: var(--color-accent); background: #351111; }
+
+.quiz-nav { display: flex; justify-content: space-between; margin-top: 2rem; }
+
+/* hotspot question */
+.hotspot-wrap { position: relative; display: inline-block; max-width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--color-border); }
+.hotspot-wrap img { display: block; width: 100%; height: auto; }
+.hotspot {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px dashed rgba(247, 236, 230, 0.55);
+  background: rgba(226, 69, 47, 0.08);
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.hotspot:hover { background: rgba(226, 69, 47, 0.28); border-color: var(--color-accent-hover); transform: scale(1.05); }
+.hotspot.selected { background: rgba(226, 69, 47, 0.5); border-color: var(--color-accent); border-style: solid; }
+
+/* video question */
+.video-wrap { border-radius: 12px; overflow: hidden; border: 1px solid var(--color-border); aspect-ratio: 16/9; background: #000; }
+.video-wrap iframe, .video-wrap video { width: 100%; height: 100%; display: block; }
+.video-gate {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  border: 1px dashed var(--color-border);
+  color: var(--color-ink-dim);
+  font-size: 0.88rem;
 }
 
-.recommendation-box {
-  background: rgba(139, 30, 36, 0.06);
-  border: 1px solid rgba(139, 30, 36, 0.2);
-  border-radius: var(--radius-md);
-  padding: 0.75rem 1rem;
+/* ---- Results ------------------------------------------------------------ */
+.results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 820px) { .results-grid { grid-template-columns: 1fr; } }
+.score-row { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 0; border-bottom: 1px solid var(--color-border); }
+.score-row:last-child { border-bottom: none; }
+.score-value { font-family: var(--font-mono); font-weight: 700; }
+.score-value.low { color: var(--color-danger); }
+.score-value.mid { color: var(--color-warning); }
+.score-value.high { color: var(--color-success); }
+.recommend-box {
   margin-top: 0.5rem;
-  font-size: 0.85rem;
-}
-
-/* --- Footer -------------------------------------------------------------------- */
-footer.site-footer {
-  background: var(--ink);
-  color: rgba(247, 243, 241, 0.7);
-  padding: 2rem 0;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: #200a0a;
   font-size: 0.9rem;
 }
+canvas#resultsChart { width: 100%; height: auto; background: #180707; border-radius: var(--radius); border: 1px solid var(--color-border); }
 
-footer.site-footer a {
-  color: var(--paper);
-  transition: color 0.2s ease;
-}
-
-footer.site-footer a:hover {
-  color: var(--red-light);
-}
-
-/* Visible keyboard focus everywhere (accessibility floor) */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 3px solid var(--red-light);
-  outline-offset: 2px;
-}
+/* utility */
+.stack { display: grid; gap: 1rem; }
+.text-dim { color: var(--color-ink-dim); }
+.center { text-align: center; }
+.mt-2 { margin-top: 2rem; }
