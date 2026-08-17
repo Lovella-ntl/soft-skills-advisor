@@ -239,9 +239,26 @@ a {
   z-index: 2;
 }
 
+.hero-ssa h1,
+.hero-ssa h2:not(.card-ssa h2) {
+  color: var(--paper);
+}
+
 .hero-ssa .lede {
-  color: rgba(247, 243, 241, 0.85);
+  color: #E8B0B3; /* same as the eyebrow ("Four values. One profile...") for visibility on the dark hero */
   max-width: 42rem;
+}
+
+/* Text inside a white card must stay dark even when the card sits inside
+   a dark section like .hero-ssa (which sets light text by default). */
+.card-ssa {
+  color: var(--ink);
+}
+
+.card-ssa p,
+.card-ssa li,
+.card-ssa span:not([style]) {
+  color: var(--ink);
 }
 
 /* Four value chips echoed in the hero, each tinted with its value color */
@@ -402,6 +419,12 @@ a {
   max-width: 980px;
 }
 
+.assessment-shell h1,
+.assessment-shell p,
+.assessment-shell label {
+  color: #000;
+}
+
 .timer-display {
   font-family: "Sora", sans-serif;
   font-variant-numeric: tabular-nums;
@@ -495,7 +518,7 @@ a {
 .likert-statement-cell {
   padding: 0.9rem 1rem;
   font-size: 0.92rem;
-  color: var(--ink);
+  color: #000;
 }
 
 .likert-category-tag {
