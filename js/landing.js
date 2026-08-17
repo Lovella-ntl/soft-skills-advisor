@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("startForm");
 
   ssaBindForm(form, (data) => {
-    // Persist details for use on the Quiz + Results pages.
+    // Persist details for use on the Assessment + Results pages.
     sessionStorage.setItem(
       "ssaStudent",
       JSON.stringify({
@@ -17,6 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
         email: data.email,
       })
     );
-    window.location.href = "quiz.html";
+    window.location.href = "assessment.html";
   });
 });
