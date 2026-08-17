@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // No backend in this static demo — we simulate a successful send by
     // revealing an inline confirmation and resetting the form/state.
     successBanner.classList.remove("d-none");
-    successBanner.textContent = `Thanks, ${data.contactName.split(" ")[0]} — your message has been recorded. We'll reply to ${data.contactEmail}.`;
+    successBanner.textContent = `Thanks, ${data.contactName.split(" ")[0]}  your message has been recorded. We'll reply to ${data.contactEmail}.`;
     form.reset();
     form.querySelectorAll(".is-valid, .is-invalid").forEach((f) => {
       f.classList.remove("is-valid", "is-invalid");
